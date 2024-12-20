@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-    $r->post('/ProductController', [App\Controller\ProductController::class, 'handle']);
+    $r->post('/api/ProductController', [App\Controller\ProductController::class, 'handle']);
 });
 
 $routeInfo = $dispatcher->dispatch(
