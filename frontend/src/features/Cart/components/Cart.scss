@@ -1,0 +1,22 @@
+.cart-modal {
+  visibility: hidden;
+  background-color: rgba(var(--bs-secondary-rgb), 0);
+  transition: 0.3s;
+
+  &.visible {
+    visibility: visible;
+    background-color: rgba(var(--bs-secondary-rgb), .3);
+
+    .modal {
+      transform: translateY(0px);
+      opacity: 1;
+    }
+  }
+
+  .modal {
+    transform: translateY(30px);
+    transition: 0.3s;
+    opacity: 0;
+    max-width: 325px;
+  }
+}

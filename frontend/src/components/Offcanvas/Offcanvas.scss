@@ -1,0 +1,19 @@
+.offcanvas {
+  transform: translateX(-100%);
+  transition: 0.3s;
+
+  &.visible {
+    transform: translateX(0);
+  }
+}
+
+.curtain {
+  visibility: hidden;
+  transition: 0.3s;
+  background-color: rgba(var(--bs-secondary-rgb), 0);
+
+  &.visible {
+    visibility: visible;
+    background-color: rgba(var(--bs-secondary-rgb), .5);
+  }
+}

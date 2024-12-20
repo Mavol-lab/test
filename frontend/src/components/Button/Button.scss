@@ -1,0 +1,81 @@
+@mixin Button($background, $color) {
+  cursor: pointer;
+  opacity: 1;
+  transition: 0.5s;
+  color: $color;
+  position: relative;
+
+  &:focus,
+  &:focus-visible,
+  &:hover {
+    opacity: 0.8;
+    transition: 0s;
+    outline: none;
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &.solid {
+    background-color: var(--#{$background});
+    border: none;
+  }
+
+  &.outline {
+    background-color: transparent;
+    border: 1px solid var(--#{$background});
+    color: var(--#{$background});
+
+    .loader {
+      display: none;
+    }
+  }
+
+  &.transparent {
+    background-color: transparent;
+    border: 1px solid transparent;
+    color: var(--#{$background});
+    transition: 0.5s;
+
+    .loader {
+      display: none;
+    }
+
+    &:focus {
+      border: 1px solid rgba(var(--#{$background}-rgb), .1);
+    }
+
+    &:hover {
+      box-shadow: var(--bs-box-shadow);
+      transition: 0s;
+    }
+  }
+}
+
+.btn {
+  &.primary {
+    @include Button('bs-primary', white);
+  }
+
+  &.secondary {
+    @include Button('bs-secondary', white);
+  }
+
+  &.success {
+    @include Button('bs-success', white);
+  }
+
+  &.danger {
+    @include Button('bs-danger', white);
+  }
+
+  &.warning {
+    @include Button('bs-warning', white);
+  }
+
+  &.info {
+    @include Button('bs-info', white);
+  }
+}

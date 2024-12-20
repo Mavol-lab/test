@@ -1,0 +1,32 @@
+.carousel {
+  background-size: contain;
+  background-repeat: no-repeat;
+  max-width: 575px;
+  min-height: 400px;
+  background-position: center;
+
+  .controls {
+    transition: 0.3s;
+    opacity: 0;
+
+    .right {
+      transform: translateX(10px);
+    }
+
+    .left {
+      transform: translateX(-10px);
+    }
+  }
+
+  &:hover {
+    .controls {
+      opacity: 1;
+
+      .right,
+      .left {
+        transform: translateX(0px);
+      }
+    }
+  }
+
+}

@@ -1,0 +1,45 @@
+.header ul li {
+  list-style: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: 0.2s;
+
+  &:hover {
+    color: var(--bs-primary);
+    transition: 0s;
+  }
+
+  &.selected {
+    border-bottom: 2px solid var(--bs-primary);
+    color: var(--bs-primary);
+    transition: 0s;
+
+    font-weight: 600;
+  }
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -0.3rem;
+  right: -0.3rem;
+  background-color: var(--bs-secondary);
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  min-width: 1rem;
+  height: 1rem;
+}
+
+.header-logo {
+  img {
+    transition: 0.2s;
+
+    &:hover {
+      filter: drop-shadow(0px 0px 10px var(--bs-primary));
+    }
+
+  }
+}

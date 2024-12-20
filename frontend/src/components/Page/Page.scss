@@ -1,0 +1,15 @@
+.page {
+  transition: 0.3s;
+  transform: translateY(-100px);
+  opacity: 0;
+
+  &.fadingIn {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+
+  &.fadingOut {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+}
