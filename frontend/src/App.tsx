@@ -14,7 +14,7 @@ import { AppRoutes } from './routes'
 
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: 'http://localhost/ProductController',
+    uri: 'http://localhost/api/ProductController',
   }),
   cache: new InMemoryCache(),
 })
