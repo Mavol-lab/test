@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { useMemo } from 'react'
+import { JSX, useMemo } from 'react'
 
 import { TPropsWithStyle } from '../../types/TPropsWith'
 import { deepClone } from '../../utils/deepObjectEqual'

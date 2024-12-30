@@ -1,3 +1,5 @@
+import { JSX } from 'react'
+
 import InputProvider from '../Inputs/InputBase/InputProvider'
 import InputSwitch, {
   TInputSwitchProps,
