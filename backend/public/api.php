@@ -7,14 +7,14 @@ use App\Middleware\CORS;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Load configurations
-ConfigLoader::load(__DIR__ . '/../');
+// Load configurations realpath(__DIR__ . '/../src/Entity')
+ConfigLoader::load(realpath(__DIR__ . '/../'));
 
 // Handle CORS
 CORS::handle();
 
 // Initialize router
-$dispatcher = FastRoute\simpleDispatcher(require __DIR__ . '/../routes/routes.php');
+$dispatcher = FastRoute\simpleDispatcher(realpath(__DIR__ . '/../routes/routes.php'));
 $routeInfo = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 
 // Exception handler
