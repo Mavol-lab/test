@@ -14,7 +14,7 @@ ConfigLoader::load(realpath(__DIR__ . '/../'));
 CORS::handle();
 
 // Initialize router
-$dispatcher = FastRoute\simpleDispatcher(realpath(__DIR__ . '/../routes/routes.php'));
+$dispatcher = FastRoute\simpleDispatcher(require realpath(__DIR__ . '/../routes/routes.php'));
 $routeInfo = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 
 // Exception handler
