@@ -3,6 +3,6 @@
 use FastRoute\RouteCollector;
 
 return function (RouteCollector $r) {
-    $r->post('/ProductController', [App\Controller\ProductController::class, 'handle']);
-    $r->get('/ProductController', [App\Controller\ProductController::class, 'handle']);
+    $r->post('/api/ProductController', [App\Controller\ProductController::class, 'handle']);
+    $r->get('/api/ProductController', [App\Controller\ProductController::class, 'handle']);
 };
