@@ -6,6 +6,10 @@
   animation:
     l20-1 0.8s infinite linear alternate,
     l20-2 1.6s infinite linear;
+
+  &.primary {
+    border: 2px solid var(--bs-primary);
+  }
 }
 
 @keyframes l20-1 {

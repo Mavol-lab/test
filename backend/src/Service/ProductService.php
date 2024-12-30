@@ -2,13 +2,16 @@
 
 namespace App\Service;
 
-use App\Entity\Category;
+use App\Entity\Cart;
+use App\Entity\CartItem;
+use App\Entity\CartItemAttribute;
 use App\Repository\ProductRepository;
 use App\Entity\Product;
 use App\Entity\ProductAttribute;
 use App\Entity\ProductAttributeItem;
 use App\Entity\ProductGallery;
 use App\Entity\ProductPrice;
+use App\Repository\CartRepository;
 use App\Repository\CategoryRepository;
 use HTMLPurifier;
 
@@ -16,12 +19,17 @@ class ProductService
 {
   private ProductRepository $productRepository;
   private CategoryRepository $categoryRepository;
+  private CartRepository $cartRepository;
   private HTMLPurifier $purifier;
 
-  public function __construct(ProductRepository $productRepository, CategoryRepository $categoryRepository)
-  {
+  public function __construct(
+    ProductRepository $productRepository,
+    CategoryRepository $categoryRepository,
+    CartRepository $cartRepository
+  ) {
     $this->productRepository = $productRepository;
     $this->categoryRepository = $categoryRepository;
+    $this->cartRepository = $cartRepository;
     $this->purifier = getPurifier();
   }
 
@@ -83,7 +91,7 @@ class ProductService
 
   public function getAllCategories(): array
   {
-    return $this->categoryRepository->getAllCategories();;
+    return $this->categoryRepository->getAllCategories();
   }
 
   public function getProductById(string $id)
@@ -138,6 +146,14 @@ class ProductService
       'prices' => $prices,
       'attributes' => $attributes,
     ];
+  }
+
+  /**
+   * @param CartItem[] $items array of products.
+   */
+  public function addToCart(array $items): bool
+  {
+    return $this->cartRepository->addToCart($items);
   }
 
   public function addProduct(array $data): Product

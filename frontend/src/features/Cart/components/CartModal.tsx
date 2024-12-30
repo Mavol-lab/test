@@ -1,5 +1,6 @@
 import './Cart.scss'
 
+import { gql, useMutation } from '@apollo/client'
 import classNames from 'classnames'
 
 import Button from '../../../components/Button/Button'
@@ -8,14 +9,40 @@ import ButtonType from '../../../components/Button/types/ButtonType'
 import { useCart } from '../providers/CartProvider.'
 import CartModalCard from './CartModalCard'
 
+const ADD_TO_CART = gql`
+  mutation AddToCart($cartItems: [CartItemInput!]!) {
+    addToCart(cartItems: $cartItems)
+  }
+`
+
 function CartModal() {
   const cart = useCart()
+
+  const [addToCart, { loading, error, data }] = useMutation(ADD_TO_CART)
+
+  const handleSubmit = async () => {
+    const variables = cart.cart.map((c) => {
+      const attributes = Object.entries(c.options).map((o) => {
+        return { name: o[0], value: o[1] }
+      })
+
+      return {
+        productId: c.productId,
+        quantity: c.quantity,
+        attributes,
+      }
+    })
+
+    await addToCart({ variables: { cartItems: variables } })
+
+    cart.clearCart()
+  }
 
   return (
     <div
       onClick={cart.closeModal}
       className={classNames(
-        'cart-modal position-absolute w-100 h-100 top-0 start-0 d-flex justify-content-end align-items-start',
+        'z-1 cart-modal position-absolute w-100 h-100 d-flex justify-content-end align-items-start',
         { visible: cart.isModalVisible },
       )}
     >
@@ -34,7 +61,7 @@ function CartModal() {
 
           {cart.itemCount() > 0 ? (
             <div
-              className="overflow-y-scroll gap-5 d-flex flex-column"
+              className="overflow-y-auto gap-5 d-flex flex-column"
               style={{ height: 300 }}
             >
               {cart.cart.map((item, i) => (
@@ -55,6 +82,7 @@ function CartModal() {
             color={ButtonColor.Primary}
             type={ButtonType.Solid}
             isDisabled={cart.itemCount() === 0}
+            onClick={handleSubmit}
           >
             <span>PLACE ORDER</span>
           </Button>

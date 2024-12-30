@@ -17,7 +17,7 @@ class Category
   #[ORM\Column(type: 'string', length: 255)]
   private string $name;
 
-  #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class, fetch: 'EAGER')]
+  #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class)]
   private Collection $products;
 
   public function getId(): int

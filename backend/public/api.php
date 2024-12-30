@@ -1,48 +1,33 @@
 <?php
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+use App\Handlers\ExceptionHandler;
+use App\Utils\ExceptionCode;
+use App\Config\ConfigLoader;
+use App\Middleware\CORS;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config/doctrine_config.php';
-require_once __DIR__ . '/../config/purifier_config.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204);
-    exit;
-}
+// Load configurations
+ConfigLoader::load(__DIR__);
 
-$dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-    $r->post('/api/ProductController', [App\Controller\ProductController::class, 'handle']);
-});
+// Handle CORS
+CORS::handle();
 
-$routeInfo = $dispatcher->dispatch(
-    $_SERVER['REQUEST_METHOD'],
-    $_SERVER['REQUEST_URI']
-);
+// Initialize router
+$dispatcher = FastRoute\simpleDispatcher(require __DIR__ . '/../routes/routes.php');
+$routeInfo = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 
-try {
-    switch ($routeInfo[0]) {
-        case FastRoute\Dispatcher::NOT_FOUND:
-            http_response_code(404);
-            exit;
-            break;
-        case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-            $allowedMethods = $routeInfo[1];
-            http_response_code(405);
-            exit;
-            break;
-        case FastRoute\Dispatcher::FOUND:
-            $handler = $routeInfo[1];
-            $vars = $routeInfo[2];
-            echo $handler($vars);
-            break;
-    }
-} catch (Exception $e) {
-    // Отправляем ошибку в формате JSON
-    http_response_code($e->getCode());
-    echo json_encode([
-        'error' => true,
-        'message' => $e->getMessage(),
-    ]);
+// Exception handler
+set_exception_handler([ExceptionHandler::class, 'handle']);
+
+switch ($routeInfo[0]) {
+    case FastRoute\Dispatcher::NOT_FOUND:
+        throw new ExceptionCode(404, "Service not found");
+    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+        throw new ExceptionCode(405, "Method not allowed");
+    case FastRoute\Dispatcher::FOUND:
+        [$class, $method] = $routeInfo[1];
+        $vars = $routeInfo[2];
+        echo call_user_func([new $class, $method], $vars);
+        break;
 }

@@ -3,6 +3,12 @@
   transform: translateY(-100px);
   opacity: 0;
 
+  &.idle {
+    transform: translateY(100px);
+    transition: 0s;
+    opacity: 0;
+  }
+
   &.fadingIn {
     transform: translateY(0px);
     opacity: 1;

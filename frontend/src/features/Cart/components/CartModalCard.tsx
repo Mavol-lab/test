@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { useEffect, useMemo, useState } from 'react'
 
 import Button from '../../../components/Button/Button'
@@ -6,7 +6,11 @@ import ButtonColor from '../../../components/Button/types/ButtonColor'
 import ButtonType from '../../../components/Button/types/ButtonType'
 import Form, { TFormSettings } from '../../../components/Form/Form'
 import { toKebabCase } from '../../../utils/textFormat'
-import IProduct from '../../Product/models/IProduct'
+import {
+  GET_PRODUCT,
+  TGetProductQuery,
+  TGetProductResult,
+} from '../graphql/GetProductQuery'
 import { useCart } from '../providers/CartProvider.'
 
 type TProps = {
@@ -31,52 +35,16 @@ type TProps = {
   options: { [x: string]: string }
 }
 
-const GET_PRODUCT = gql`
-  query GetProduct($id: String!) {
-    product(id: $id) {
-      id
-      name
-      inStock
-      description
-      brand
-      gallery {
-        imageUrl
-        id
-      }
-      category {
-        name
-      }
-      prices {
-        amount
-        currency {
-          label
-          symbol
-        }
-      }
-      attributes {
-        id
-        name
-        type
-        items {
-          displayValue
-          value
-          id
-        }
-      }
-    }
-  }
-`
-
 function CartModalCard(props: TProps) {
   const cart = useCart()
-  const { loading, error, data } = useQuery<{ product: IProduct }>(
+  const getProductQueryResult = useQuery<TGetProductResult, TGetProductQuery>(
     GET_PRODUCT,
     {
       variables: { id: props.productId },
     },
   )
   const [form, setForm] = useState<{ [x: string]: string }>(props.options)
-  const price = data?.product.prices[0]
+  const price = getProductQueryResult.data?.product.prices[0]
 
   useEffect(() => {
     setForm(props.options)
@@ -85,9 +53,9 @@ function CartModalCard(props: TProps) {
   const generateSettings = useMemo((): TFormSettings<{
     [x: string]: string
   }>[] => {
-    if (data) {
+    if (getProductQueryResult.data) {
       // Map product attributes into form settings.
-      return data.product.attributes.map((o, i) => {
+      return getProductQueryResult.data.product.attributes.map((o) => {
         return {
           inputProps: {
             type: o.type === 'swatch' ? 'color' : 'switch',
@@ -109,12 +77,14 @@ function CartModalCard(props: TProps) {
     }
 
     return [] // Return an empty array if there's no data.
-  }, [data])
+  }, [getProductQueryResult.data])
 
   return (
     <div className="d-flex gap-2">
-      <div className="d-flex flex-column text-truncate">
-        <span title={data?.product.name}>{data?.product.name}</span>
+      <div className="d-flex flex-column text-truncate flex-grow-1">
+        <span title={getProductQueryResult.data?.product.name}>
+          {getProductQueryResult.data?.product.name}
+        </span>
         <div className="fs-6 fw-bold text-uppercase">
           <span title={price?.currency.label}>{price?.currency.symbol}</span>
           <span>{price?.amount}</span>
@@ -134,7 +104,7 @@ function CartModalCard(props: TProps) {
             cart.addToCart({
               ...props,
               quantity: 1,
-              price: data?.product.prices,
+              price: getProductQueryResult.data?.product.prices,
             })
           }
           testId="cart-item-amount-increase"
@@ -157,7 +127,10 @@ function CartModalCard(props: TProps) {
         </Button>
       </div>
       <div className="d-flex align-items-center">
-        <img width={121} src={data?.product.gallery[0].imageUrl} />
+        <img
+          width={121}
+          src={getProductQueryResult.data?.product.gallery[0].imageUrl}
+        />
       </div>
     </div>
   )

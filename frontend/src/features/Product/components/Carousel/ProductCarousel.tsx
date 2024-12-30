@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import { useState } from 'react'
 
 import Carousel from '../../../../components/Carousel/Carousel'
+import Image from '../../../../components/Image/Image'
 import Breakpoint from '../../../../enums/Breakpoint'
 import useWindowSize from '../../../../hooks/useWindowSize'
 
@@ -69,12 +70,11 @@ function ProductCarousel(props: TProps) {
               { 'shadow border border-primary': currentImage === image },
             ])}
           >
-            <img
+            <Image
               width={80}
               height={80}
-              src={image}
               alt={`Thumbnail ${index}`}
-              className={classNames(['cursor-pointer'])}
+              src={image}
               onClick={() => setCurrentImage(image)}
             />
           </div>

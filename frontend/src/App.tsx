@@ -14,7 +14,7 @@ import { AppRoutes } from './routes'
 
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: 'http://185.229.227.94/api/ProductController',
+    uri: import.meta.env.VITE_APP_API_URL,
   }),
   cache: new InMemoryCache(),
 })

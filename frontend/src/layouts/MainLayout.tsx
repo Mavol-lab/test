@@ -30,7 +30,7 @@ export default function MainLayout() {
   }
 
   return (
-    <>
+    <div style={{ height: '100vh' }} className="d-flex flex-column ">
       <div className="container-xxl d-flex flex-column px-0">
         {/** Page header */}
         <Header>
@@ -44,11 +44,9 @@ export default function MainLayout() {
         </Header>
       </div>
 
-      <div className="position-relative overflow-y-auto">
-        <div
-          className="container-xxl d-flex flex-column px-0"
-          style={{ height: '100vh' }}
-        >
+      <div className=" overflow-y-auto pb-5">
+        <CartModal />
+        <div className="container-xxl d-flex flex-column px-0">
           {/** Page body */}
           <div className="flex-grow-1">
             <div className="row px-md-4 py-sm-3 py-lg-7 m-0 position-relative">
@@ -60,8 +58,7 @@ export default function MainLayout() {
             </div>
           </div>
         </div>
-        <CartModal />
       </div>
-    </>
+    </div>
   )
 }

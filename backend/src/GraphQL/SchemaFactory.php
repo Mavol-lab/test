@@ -11,12 +11,15 @@ class SchemaFactory
 {
   public static function create(EntityManagerInterface $entityManager): Schema
   {
-    // Репозиторий и сервис
+    // Repositories
     $productRepository = $entityManager->getRepository('App\Entity\Product');
     $categoryRepository = $entityManager->getRepository('App\Entity\Category');
-    $productService = new ProductService($productRepository, $categoryRepository);
+    $cartRepository = $entityManager->getRepository('App\Entity\Cart');
 
-    // Резолвер
+    // Services
+    $productService = new ProductService($productRepository, $categoryRepository, $cartRepository);
+
+    // Resolvers
     $productResolver = new ProductResolver($productService);
 
     return new Schema([

@@ -82,7 +82,7 @@ export default function InputProvider<T>(
   }
 
   return (
-    <InputContext.Provider
+    <InputContext
       value={{
         onChange,
         setValue,
@@ -90,7 +90,7 @@ export default function InputProvider<T>(
       }}
     >
       {props.children}
-    </InputContext.Provider>
+    </InputContext>
   )
 }
 

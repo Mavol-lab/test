@@ -31,50 +31,37 @@ export function NavigationProvider(props: TProps) {
   const nav = useNavigate()
   const currentRoute = useLocation()
 
-  const fadeInTimeout = useRef<number | null>(null)
-  const fadeOutTimeout = useRef<number | null>(null)
+  const fadeInTimeout = useRef<NodeJS.Timeout | null>(null)
+  const fadeOutTimeout = useRef<NodeJS.Timeout | null>(null)
 
   const navigate = (route: string) => {
     if (isNavigatorBlocked || currentRoute.pathname === route) {
       return false
     }
 
+    const isAbsolutePath = route[0] === '/'
+    const newPath = isAbsolutePath ? route : `${currentRoute.pathname}/${route}`
+
     setIsNavigatorBlocked(true)
     setAnimationState('fadingOut')
 
     fadeOutTimeout.current = setTimeout(() => {
-      const isAbsolutePath = route[0] === '/'
-      const newPath = isAbsolutePath
-        ? route
-        : `${currentRoute.pathname}/${route}`
-
       nav(newPath)
-      setAnimationState('idle')
-
-      fadeInTimeout.current = setTimeout(() => {
-        setAnimationState('fadingIn')
-        setIsNavigatorBlocked(false)
-
-        fadeInTimeout.current = null
-        fadeOutTimeout.current = null
-      }, 300)
     }, 300)
 
     return true
   }
 
   useEffect(() => {
-    setAnimationState('fadingIn')
+    setAnimationState('idle')
+    fadeInTimeout.current = setTimeout(() => {
+      setAnimationState('fadingIn')
+      setIsNavigatorBlocked(false)
 
-    return () => {
-      if (fadeInTimeout.current) {
-        clearTimeout(fadeInTimeout.current)
-      }
-      if (fadeOutTimeout.current) {
-        clearTimeout(fadeOutTimeout.current)
-      }
-    }
-  }, [])
+      fadeInTimeout.current = null
+      fadeOutTimeout.current = null
+    }, 300)
+  }, [currentRoute])
 
   return (
     <NavigationContext.Provider

@@ -50,7 +50,7 @@ type TCartContextType = {
   /**
    * Function to clear all items from the cart.
    */
-  clearCart: () => void
+  clearCart: () => Promise<void>
 
   /**
    * Retrieves total cart price.
@@ -221,7 +221,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   return (
-    <CartContext.Provider
+    <CartContext
       value={{
         cart,
         addToCart,
@@ -235,6 +235,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       }}
     >
       {children}
-    </CartContext.Provider>
+    </CartContext>
   )
 }

@@ -7,6 +7,7 @@ import Button from '../../../components/Button/Button'
 import ButtonColor from '../../../components/Button/types/ButtonColor'
 import ButtonType from '../../../components/Button/types/ButtonType'
 import Form, { TFormSettings } from '../../../components/Form/Form'
+import Spinner from '../../../components/Spinner/Spinner'
 import Breakpoint from '../../../enums/Breakpoint'
 import useWindowSize from '../../../hooks/useWindowSize'
 import { toKebabCase } from '../../../utils/textFormat'
@@ -141,6 +142,14 @@ export default function Product() {
     })
 
     cart.openModal()
+  }
+
+  if (loading) {
+    return (
+      <div className="">
+        <Spinner className="primary m-auto" width={50} />
+      </div>
+    )
   }
 
   return (

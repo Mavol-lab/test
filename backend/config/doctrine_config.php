@@ -1,37 +1,41 @@
 <?php
 
-use App\Helper\SQLLoggerMiddleware;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\DBAL\DriverManager;
-use Monolog\Handler\StreamHandler;
-use Monolog\Level;
-use Monolog\Logger;
 
+/**
+ * Create and configure the Doctrine EntityManager.
+ */
 function getEntityManager(): EntityManager
 {
-  $paths = [dirname(__DIR__) . '/src/Entity'];  // Путь к сущностям
-  $isDevMode = true; // Для разработки
+  // Validate environment variables
+  $requiredEnvVars = ['DB_USER', 'DB_PASSWORD', 'DB_NAME', 'DB_HOST', 'APP_ENV'];
+  foreach ($requiredEnvVars as $var) {
+    if (empty($_ENV[$var])) {
+      throw new RuntimeException("Environment variable '{$var}' is not set.");
+    }
+  }
 
-  // Параметры подключения к базе данных
+  // Paths to entity mappings
+  $paths = [realpath(__DIR__ . '/../src/Entity')];
+
+  $isDevMode = $_ENV['APP_ENV'] == 'development';
+
+  // Database connection parameters
   $dbParams = [
     'driver'   => 'pdo_mysql',
-    'user'     => 'freedb_mavol',
-    'password' => '6bt@ppG3yMU*DMC',
-    'dbname'   => 'freedb_test_databaseeeee',
-    'host'     => 'sql.freedb.tech'
+    'user'     => $_ENV['DB_USER'],
+    'password' => $_ENV['DB_PASSWORD'],
+    'dbname'   => $_ENV['DB_NAME'],
+    'host'     => $_ENV['DB_HOST']
   ];
 
-  $logger = new Logger('doctrine_sql');
-  $logger->pushHandler(new StreamHandler(dirname(__DIR__) . '/logs/doctrine.log', Level::Debug));
-
-  // Создание конфигурации Doctrine с атрибутами
+  // Configure Doctrine ORM
   $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode);
 
-  // Подключение к базе данных
+  // Create connection and EntityManager
   $connection = DriverManager::getConnection($dbParams, $config);
-  $connection->getConfiguration()->setMiddlewares([new SQLLoggerMiddleware($logger)]);
 
-  // Создание EntityManager
   return new EntityManager($connection, $config);
 }
