@@ -8,7 +8,7 @@ use App\Middleware\CORS;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Load configurations
-ConfigLoader::load(__DIR__);
+ConfigLoader::load(__DIR__ . '/../');
 
 // Handle CORS
 CORS::handle();
