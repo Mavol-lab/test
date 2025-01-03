@@ -112,6 +112,7 @@ export default function Product() {
                 key: i.value,
                 id: i.id,
                 name: i.displayValue,
+                testId: `product-attribute-${toKebabCase(i.value)}`,
               }
             }),
             testId: `product-attribute-${toKebabCase(o.name)}`,

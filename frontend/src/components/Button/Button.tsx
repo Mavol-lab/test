@@ -78,6 +78,7 @@ function Button(props: TProps) {
       data-testid={props.testId}
       aria-disabled={props.isDisabled || isLoading}
       aria-busy={isLoading}
+      disabled={props.isDisabled}
     >
       {props.children}
       <Spinner className={classNames({ 'd-none': !isLoading })} />

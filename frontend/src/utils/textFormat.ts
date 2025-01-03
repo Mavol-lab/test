@@ -1,9 +1,9 @@
-/**
- * Retrieves specified string in kebab case.
- */
 const KEBAB_REGEX = /\p{Lu}/gu
 const REVERSE_REGEX = /-\p{Ll}/gu
 
+/**
+ * Retrieves specified string in kebab case.
+ */
 export function toKebabCase(input: string): string {
   return input
     .replace(KEBAB_REGEX, (match) => '-' + match.toLowerCase())
