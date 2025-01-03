@@ -44,6 +44,10 @@ export default function MainLayout() {
     navigate(`/${item.toLowerCase()}`)
   }
 
+  const toggleModel = () => {
+    cart.isModalVisible ? cart.closeModal() : cart.openModal()
+  }
+
   return (
     <div style={{ height: '100vh' }} className="d-flex flex-column ">
       <div className="container-xxl d-flex flex-column px-0">
@@ -57,10 +61,7 @@ export default function MainLayout() {
               aria-label="Category Navigation"
             />
             <Header.Logo />
-            <Header.CartButton
-              onClick={cart.openModal}
-              aria-label="Open Cart"
-            />
+            <Header.CartButton onClick={toggleModel} aria-label="Open Cart" />
           </Header>
         )}
       </div>
