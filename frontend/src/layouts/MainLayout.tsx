@@ -31,7 +31,7 @@ export default function MainLayout() {
 
   useEffect(() => {
     if (!loading && !data?.categories.some((c) => c.name === category)) {
-      navigate(`/category/${data?.categories[0].name}`)
+      navigate(`/${data?.categories[0].name}`)
     }
   }, [loading, category, data?.categories, navigate])
 
@@ -41,7 +41,7 @@ export default function MainLayout() {
    * @param item - The selected item as a string.
    */
   const onSelect = (item: string) => {
-    navigate(`/category/${item.toLowerCase()}`)
+    navigate(`/${item.toLowerCase()}`)
   }
 
   return (

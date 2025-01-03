@@ -16,14 +16,14 @@ export const publicRoutes = [
     children: [
       {
         index: true,
-        element: <Navigate to="/category/all" replace />,
+        element: <Navigate to="/all" replace />,
       },
       {
-        path: '/category/:category',
+        path: '/:category',
         element: <Catalog />,
       },
       {
-        path: '/category/:category/product/:product',
+        path: '/:category/product/:product',
         element: <Product />,
       },
     ],

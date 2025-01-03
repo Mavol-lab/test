@@ -86,7 +86,7 @@ function HeaderNav(props: TProps) {
           {...ulItem(item)}
         >
           <a
-            href={`/category/${item}`}
+            href={`/${item}`}
             aria-current={props.selected === item ? 'page' : undefined}
             data-testid={
               props.selected === item ? 'active-category-link' : 'category-link'
@@ -135,7 +135,7 @@ function HeaderNav(props: TProps) {
               {...ulItem(item)}
             >
               <a
-                href={`/category/${item}`}
+                href={`/${item}`}
                 aria-current={props.selected === item ? 'page' : undefined}
                 data-testid={
                   props.selected === item
