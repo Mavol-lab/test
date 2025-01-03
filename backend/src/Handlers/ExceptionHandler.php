@@ -4,21 +4,31 @@ namespace App\Handlers;
 
 use App\Utils\ExceptionCode;
 
+/**
+ * This class is responsible for handling exceptions that occur within the application.
+ * It provides mechanisms to catch, log, and respond to exceptions in a consistent manner.
+ */
 class ExceptionHandler
 {
-  public static function handle(ExceptionCode $exception)
-  {
-    if ($exception instanceof ExceptionCode) {
-      http_response_code($exception->getCode());
+    /**
+     * Handles the given exception.
+     */
+    public static function handle(ExceptionCode $exception): void
+    {
+        $output = [
+            'errors' => [
+                [
+                    'message' => $exception->getMessage(),
+                    'extensions' => [
+                        'code' => $exception->getCode()
+                    ]
+                ]
+            ],
+            'data' => null
+        ];
 
-      $message = $exception->getMessage();
+        echo json_encode($output);
 
-      echo json_encode([
-        'error' => true,
-        'message' => $message ?? 'Unexpected server error'
-      ]);
-
-      exit;
+        exit;
     }
-  }
 }

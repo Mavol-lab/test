@@ -2,30 +2,39 @@
 
 use App\Handlers\ExceptionHandler;
 use App\Utils\ExceptionCode;
-use App\Config\ConfigLoader;
 use App\Middleware\CORS;
+use Dotenv\Dotenv;
+use FastRoute\Dispatcher;
+
+use function FastRoute\simpleDispatcher;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Load configurations realpath(__DIR__ . '/../src/Entity')
-ConfigLoader::load(realpath(__DIR__ . '/../'));
+// Load configurations
+Dotenv::createImmutable(__DIR__ . '/../')->load();
 
 // Handle CORS
 CORS::handle();
 
 // Initialize router
-$dispatcher = FastRoute\simpleDispatcher(require realpath(__DIR__ . '/../routes/routes.php'));
+$dispatcher = simpleDispatcher(require realpath(__DIR__ . '/../routes/routes.php'));
 $routeInfo = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 
 // Exception handler
 set_exception_handler([ExceptionHandler::class, 'handle']);
 
+// Sets the Content-Type header to application/json
+header('Content-Type: application/json');
+
+// Handles routing based on the first element of the $routeInfo array
 switch ($routeInfo[0]) {
-    case FastRoute\Dispatcher::NOT_FOUND:
+    case Dispatcher::NOT_FOUND:
+        // Thrown when the service is not found
         throw new ExceptionCode(404, "Service not found");
-    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+    case Dispatcher::METHOD_NOT_ALLOWED:
+        // Thrown when the HTTP method is not allowed
         throw new ExceptionCode(405, "Method not allowed");
-    case FastRoute\Dispatcher::FOUND:
+    case Dispatcher::FOUND:
         [$class, $method] = $routeInfo[1];
         $vars = $routeInfo[2];
         echo call_user_func([new $class, $method], $vars);

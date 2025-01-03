@@ -1,13 +1,9 @@
-# Включаем механизм переписывания
 RewriteEngine On
 
-# Пропускаем запросы к существующим файлам и директориям
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Пропускаем запросы к /ProductController на сервер для обработки через index.php
 RewriteCond %{REQUEST_URI} !^/ProductController
 RewriteRule ^ index.html [QSA,L]
 
-# Пропускаем запросы к /ProductController на сервер для обработки через PHP
 RewriteRule ^ProductController index.php [QSA,L]

@@ -1,3 +1,6 @@
+/**
+ * Enum representing different breakpoints for responsive design.
+ */
 enum Breakpoint {
   XS = 0,
   SM = 1,

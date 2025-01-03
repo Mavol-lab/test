@@ -80,6 +80,17 @@ type TCartContextType = {
 
 const CartContext = createContext<TCartContextType | undefined>(undefined)
 
+/**
+ * Custom hook to access the Cart context.
+ *
+ * This hook provides access to the Cart context, allowing components to
+ * interact with the cart state and actions. It must be used within a
+ * `CartProvider` to ensure the context is available.
+ *
+ * @throws {Error} If the hook is used outside of a `CartProvider`.
+ *
+ * @returns {TCartContextType} The current context value for the cart.
+ */
 export const useCart = () => {
   const context = useContext(CartContext)
   if (!context) {
@@ -88,6 +99,9 @@ export const useCart = () => {
   return context
 }
 
+/**
+ * CartProvider component that provides cart-related functionalities and state management.
+ */
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -109,7 +123,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   /**
    * Function to add an item to the cart.
    */
-  const addToCart = async (item: Partial<TCartItem>) => {
+  const addToCart = async (item: Partial<TCartItem>): Promise<void> => {
     if (!item.productId || !item.quantity || !item.price || !item.options) {
       throw new Error('Missing required fields in cart item')
     }
@@ -152,7 +166,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     return await cartDB.addItem(newItem)
   }
 
-  const calculateTotal = () => {
+  const calculateTotal = (): number => {
     let t = cart.reduce((total, item) => {
       return total + item.price[0]?.amount * item.quantity
     }, 0)
@@ -164,7 +178,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     return t
   }
 
-  const itemCount = () => {
+  const itemCount = (): number => {
     return cart.reduce((total, item) => {
       return total + item.quantity
     }, 0)
@@ -173,7 +187,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   /**
    * Function to remove an item from the cart by its id.
    */
-  const removeFromCart = async (id: number) => {
+  const removeFromCart = async (id: number): Promise<void> => {
     const existingItem = deepClone(cart.find((cartItem) => cartItem.id === id))
 
     if (existingItem && existingItem.quantity > 1) {
@@ -201,21 +215,21 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   /**
    * Function to open the cart.
    */
-  const openModal = () => {
+  const openModal = (): void => {
     setIsModalVisible(true)
   }
 
   /**
    * Function to close the cart.
    */
-  const closeModal = () => {
+  const closeModal = (): void => {
     setIsModalVisible(false)
   }
 
   /**
    * Function to clear all items from the cart.
    */
-  const clearCart = async () => {
+  const clearCart = async (): Promise<void> => {
     setCart([])
     await cartDB.clearStore()
   }

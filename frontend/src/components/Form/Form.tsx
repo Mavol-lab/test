@@ -29,11 +29,16 @@ type TProps<T extends object> = TPropsWithStyle & {
   settings: TFormSettings<T>[]
 }
 
+/**
+ * A generic form component that dynamically generates input fields based on the provided settings.
+ */
 function Form<T extends Record<string, any>>(props: TProps<T>) {
-  const form = useMemo(() => {
+  const { settings, form, updateForm } = props
+
+  const inputs = useMemo(() => {
     const inputs: JSX.Element[] = []
 
-    props.settings.forEach((settings) => {
+    settings.forEach((settings) => {
       if (settings.key === undefined) {
         return console.warn(settings, 'This object should have the selector.')
       }
@@ -42,30 +47,32 @@ function Form<T extends Record<string, any>>(props: TProps<T>) {
         return
       }
 
-      let value = props.form[settings.key]
+      let value = form[settings.key]
 
       inputs.push(
         GenerateInput<T[keyof T]>(settings.inputProps, value, (v: T) => {
-          const draftForm = deepClone(props.form) as T
+          const draftForm = deepClone(form) as T
 
           draftForm[settings.key] = v as T[keyof T]
 
-          props.updateForm(draftForm)
+          updateForm(draftForm)
         }),
       )
     })
 
     return inputs
-  }, [props.settings])
+  }, [settings, form, updateForm])
 
   return (
-    <form>
+    <form aria-label="dynamic-form">
       <div
         className={classNames(props.className, 'd-flex flex-column')}
         style={props.style}
       >
-        {form.map((input, index) => (
-          <div key={index}>{input}</div>
+        {inputs.map((input, index) => (
+          <div key={index} aria-labelledby={`input-${index}`}>
+            {input}
+          </div>
         ))}
       </div>
     </form>

@@ -26,6 +26,8 @@ function Carousel(props: TProps) {
     <div
       className="carousel position-relative w-100 h-100"
       style={{ backgroundImage: `url(${props.src})` }}
+      role="region"
+      aria-label="Image Carousel"
     >
       <div className="controls position-absolute w-100 h-100 px-3 d-flex align-items-center justify-content-between">
         <Button
@@ -33,6 +35,7 @@ function Carousel(props: TProps) {
           type={ButtonType.Solid}
           className="left p-0 d-flex align-items-center"
           onClick={props.onPrevious}
+          aria-label="Previous Slide"
         >
           <i className="icon icon-left bg-white p-4" />
         </Button>
@@ -41,6 +44,7 @@ function Carousel(props: TProps) {
           type={ButtonType.Solid}
           className="right p-0 d-flex align-items-center"
           onClick={props.onNext}
+          aria-label="Next Slide"
         >
           <i className="icon icon-right bg-white p-4" />
         </Button>

@@ -42,6 +42,9 @@ const InputContext = createContext<TInputContext<unknown> | undefined>(
   undefined,
 )
 
+/**
+ * A provider component for managing input state and changes.
+ */
 export default function InputProvider<T>(
   props: React.PropsWithChildren<TProps<T>>,
 ) {
@@ -94,6 +97,13 @@ export default function InputProvider<T>(
   )
 }
 
+/**
+ * Custom hook to access the input context.
+ *
+ * This hook should be used in conjunction with the input base component.
+ * It retrieves the context value from the `InputContext` and ensures that
+ * the context is available.
+ */
 export const useInputContext = <T,>() => {
   const context = useContext(InputContext as React.Context<TInputContext<T>>)
 

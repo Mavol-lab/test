@@ -5,6 +5,9 @@ import Product from '../features/Product/pages/Product'
 import MainLayout from '../layouts/MainLayout'
 import Redirect from './Redirect'
 
+/**
+ * An array of route configurations for the public-facing part of the application.
+ */
 export const publicRoutes = [
   {
     caseSensitive: false,

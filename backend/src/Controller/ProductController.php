@@ -2,28 +2,30 @@
 
 namespace App\Controller;
 
+use App\Controller\Controller;
+use App\Managers\DoctrineManager;
 use App\GraphQL\SchemaFactory;
 use GraphQL\GraphQL;
 
-class ProductController
+/**
+ * This is the controller class for handling product-related actions.
+ * It extends the base Controller class.
+ */
+final class ProductController extends Controller
 {
-  public static function handle()
-  {
-    try {
-      $input = json_decode(file_get_contents('php://input'), true);  // Получаем данные из запроса
-      $query = $input['query'];
-      $variables = $input['variables'] ?? null;
+    public static function handle(): void
+    {
+        // This code reads the raw data from the 'php://input' stream 
+        // and decodes it into a PHP associative array.
+        $input = json_decode(file_get_contents('php://input'), true);
+        $query = $input['query'];
+        $variables = $input['variables'] ?? null;
 
-      $em = getEntityManager();
+        $em = DoctrineManager::getEntityManager();
 
-      $schema = SchemaFactory::create($em);  // Создаем схему
-      $result = GraphQL::executeQuery($schema, $query, null, null, $variables);  // Выполняем запрос GraphQL
+        $schema = SchemaFactory::create($em);
+        $result = GraphQL::executeQuery($schema, $query, null, null, $variables);
 
-      header('Content-Type: application/json');
-      echo json_encode($result->toArray());  // Возвращаем результат в формате JSON
-    } catch (\Throwable $e) {
-      header('Content-Type: application/json');
-      echo json_encode(['error' => $e->getMessage()]);
+        echo json_encode($result->toArray());
     }
-  }
 }

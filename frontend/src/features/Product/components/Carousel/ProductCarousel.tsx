@@ -10,11 +10,18 @@ type TProps = {
   src: string[]
 }
 
+/**
+ * Component that displays a product image carousel with thumbnails.
+ */
 function ProductCarousel(props: TProps) {
   const [currentImage, setCurrentImage] = useState(props.src[0])
   const { reachBreakpoint } = useWindowSize()
 
-  const handleNext = () => {
+  /**
+   * Advances to the next image in the carousel.
+   * If the current image is the last one in the array, it wraps around to the first image.
+   */
+  const handleNext = (): void => {
     const next = props.src.indexOf(currentImage) + 1
 
     setCurrentImage(
@@ -22,7 +29,12 @@ function ProductCarousel(props: TProps) {
     )
   }
 
-  const handlePrevious = () => {
+  /**
+   * Handles the action of moving to the previous image in the carousel.
+   * It calculates the previous image index based on the current image index.
+   * If the current image is the first one, it wraps around to the last image.
+   */
+  const handlePrevious = (): void => {
     const prev = props.src.indexOf(currentImage) - 1
 
     setCurrentImage(
@@ -30,6 +42,16 @@ function ProductCarousel(props: TProps) {
     )
   }
 
+  /**
+   * Generates a subarray from the given array, centered around the activeIndex and extending offset elements in both directions.
+   * If the offset extends beyond the bounds of the array, it wraps around to the beginning or end of the array.
+   *
+   * @template T - The type of elements in the array.
+   * @param {number} activeIndex - The index around which the subarray is centered.
+   * @param {T[]} array - The array from which to generate the subarray.
+   * @param {number} offset - The number of elements to include on either side of the activeIndex.
+   * @returns {T[]} A subarray of the original array, centered around the activeIndex and extending offset elements in both directions.
+   */
   function drumRoll<T>(activeIndex: number, array: T[], offset: number): T[] {
     const length = array.length
     const result: T[] = []
@@ -57,8 +79,12 @@ function ProductCarousel(props: TProps) {
     <div
       className="d-flex flex-column-reverse flex-lg-row gap-5 align-items-center flex-grow-1"
       data-testid="product-gallery"
+      aria-label="Product image carousel"
     >
-      <div className="d-flex flex-row flex-lg-column gap-2">
+      <div
+        className="d-flex flex-row flex-lg-column gap-2"
+        aria-label="Thumbnail images"
+      >
         {drumRoll(
           props.src.indexOf(currentImage),
           props.src,
@@ -69,6 +95,7 @@ function ProductCarousel(props: TProps) {
             className={classNames([
               { 'shadow border border-primary': currentImage === image },
             ])}
+            aria-current={currentImage === image ? 'true' : 'false'}
           >
             <Image
               width={80}
@@ -85,6 +112,7 @@ function ProductCarousel(props: TProps) {
         src={currentImage}
         onNext={handleNext}
         onPrevious={handlePrevious}
+        aria-label="Main product image"
       />
     </div>
   )

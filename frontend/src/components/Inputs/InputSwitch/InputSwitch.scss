@@ -9,9 +9,10 @@
     border: 1px solid var(--bs-primary);
   }
 
-  &.modal .item {
+  &.readonly .item {
     min-width: 20px;
     min-height: 20px;
+    cursor: default;
   }
 
   .item {

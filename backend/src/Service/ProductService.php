@@ -2,163 +2,116 @@
 
 namespace App\Service;
 
-use App\Entity\Cart;
-use App\Entity\CartItem;
-use App\Entity\CartItemAttribute;
+use App\GraphQL\Dto\Product\CategoryDto;
+use App\GraphQL\Dto\Product\ProductDto;
+use App\GraphQL\Input\Cart\CartInput;
+use App\GraphQL\Input\Product\ProductInput;
 use App\Repository\ProductRepository;
-use App\Entity\Product;
-use App\Entity\ProductAttribute;
-use App\Entity\ProductAttributeItem;
-use App\Entity\ProductGallery;
-use App\Entity\ProductPrice;
+use App\Models\Product;
+use App\Mappers\ProductMapper;
 use App\Repository\CartRepository;
 use App\Repository\CategoryRepository;
-use HTMLPurifier;
+use App\Utils\ExceptionCode;
 
+/**
+ * Class ProductService
+ * A service layer class for handling product-related operations.
+ */
 class ProductService
 {
-  private ProductRepository $productRepository;
-  private CategoryRepository $categoryRepository;
-  private CartRepository $cartRepository;
-  private HTMLPurifier $purifier;
+    private ProductRepository $productRepository;
+    private CategoryRepository $categoryRepository;
+    private CartRepository $cartRepository;
 
-  public function __construct(
-    ProductRepository $productRepository,
-    CategoryRepository $categoryRepository,
-    CartRepository $cartRepository
-  ) {
-    $this->productRepository = $productRepository;
-    $this->categoryRepository = $categoryRepository;
-    $this->cartRepository = $cartRepository;
-    $this->purifier = getPurifier();
-  }
+    /**
+     * ProductService constructor.
+     * Initializes the repositories required for product and category operations.
+     *
+     * @param ProductRepository $productRepository The repository for product-related operations.
+     * @param CategoryRepository $categoryRepository The repository for category-related operations.
+     * @param CartRepository $cartRepository The repository for cart-related operations.
+     */
+    public function __construct(
+        ProductRepository $productRepository,
+        CategoryRepository $categoryRepository,
+        CartRepository $cartRepository
+    ) {
+        $this->productRepository = $productRepository;
+        $this->categoryRepository = $categoryRepository;
+        $this->cartRepository = $cartRepository;
+    }
 
-  public function getAllProducts(): array
-  {
-    $products = $this->productRepository->getAll();
+    /**
+     * Retrieves all products for a given category.
+     *
+     * @param string $category The category to filter products by.
+     * @return ProductDto[] An array of ProductDto objects.
+     */
+    public function getAllProducts(string $category): array
+    {
+        $products = $this->productRepository->getAll($category);
 
-    return array_map(function ($product) {
-      $gallery = array_map(function (ProductGallery $item) {
-        return [
-          'id' => $item->getId(),
-          'imageUrl' => $this->purifier->purify($item->getImageUrl())
-        ];
-      }, $product->getGallery()->toArray());
+        return array_map(function (Product $product) {
+            return ProductMapper::map($product);
+        }, $products);
+    }
 
-      $prices = array_map(function (ProductPrice $item) {
-        return [
-          'id' => $item->getId(),
-          'amount' => $item->getAmount(),
-          'currency' => [
-            'id' => $item->getCurrency()->getId(),
-            'label' => $item->getCurrency()->getLabel(),
-            'symbol' => $item->getCurrency()->getSymbol(),
-          ]
-        ];
-      }, $product->getPrices()->toArray());
+    /**
+     * Retrieves all categories.
+     *
+     * @return CategoryDto[] An array of CategoryDto objects.
+     */
+    public function getAllCategories(): array
+    {
+        return $this->categoryRepository->getAllCategories();
+    }
 
-      $attributes = array_map(function (ProductAttribute $attribute) {
-        return [
-          'id' => $attribute->getId(),
-          'name' => $attribute->getName(),
-          'type' => $attribute->getType(),
-          'items' => array_map(function (ProductAttributeItem $item) {
-            return [
-              'id' => $item->getId(),
-              'displayValue' => $item->getDisplayValue(),
-              'value' => $item->getValue()
-            ];
-          }, $attribute->getItems()->toArray())
-        ];
-      }, $product->getAttributes()->toArray());
+    /**
+     * Retrieves a single product by its ID.
+     *
+     * @param string $id The ID of the product to retrieve.
+     * @return ProductDto The ProductDto object representing the product.
+     */
+    public function getProductById(string $id): ProductDto
+    {
+        $product = $this->productRepository->getProductById($id);
 
-      return [
-        'id' => $product->getId(),
-        'name' => $product->getName(),
-        'inStock' => $product->getInStock(),
-        'description' => $product->getDescription(),
-        'brand' => $product->getBrand(),
-        'gallery' => $gallery,
-        'category' =>  [
-          'id' => $product->getCategory()->getId(),
-          'name' => $product->getCategory()->getName()
-        ],
-        'prices' => $prices,
-        'attributes' => $attributes,
-      ];
-    }, $products);
-  }
+        return ProductMapper::map($product);
+    }
 
-  public function getAllCategories(): array
-  {
-    return $this->categoryRepository->getAllCategories();
-  }
+    /**
+     * Adds a product to the cart.
+     *
+     * @param CartInput $input The input data for adding the product to the cart.
+     * @return bool True if the product was added successfully, false otherwise.
+     */
+    public function addToCart(CartInput $input): bool
+    {
+        return $this->cartRepository->addToCart($input);
+    }
 
-  public function getProductById(string $id)
-  {
-    $product = $this->productRepository->getProductById($id);
+    /**
+     * Adds a new product to the repository.
+     *
+     * @param ProductInput $input An associative array containing product data.
+     * @return Product The newly created Product entity.
+     */
+    public function addProduct(ProductInput $input): Product
+    {
+        $category = $this->categoryRepository->getCategory($input->categoryId);
 
-    $gallery = array_map(function (ProductGallery $item) {
-      return [
-        'id' => $item->getId(),
-        'imageUrl' => $this->purifier->purify($item->getImageUrl())
-      ];
-    }, $product->getGallery()->toArray());
+        if (!$category) {
+            throw new ExceptionCode(400, "Invalid category");
+        }
 
-    $prices = array_map(function (ProductPrice $item) {
-      return [
-        'id' => $item->getId(),
-        'amount' => $item->getAmount(),
-        'currency' => [
-          'id' => $item->getCurrency()->getId(),
-          'label' => $item->getCurrency()->getLabel(),
-          'symbol' => $item->getCurrency()->getSymbol(),
-        ]
-      ];
-    }, $product->getPrices()->toArray());
+        $product = new Product(
+            $input->name,
+            $input->inStock,
+            $input->description,
+            $input->brand,
+            $category
+        );
 
-    $attributes = array_map(function (ProductAttribute $attribute) {
-      return [
-        'id' => $attribute->getId(),
-        'name' => $attribute->getName(),
-        'type' => $attribute->getType(),
-        'items' => array_map(function (ProductAttributeItem $item) {
-          return [
-            'id' => $item->getId(),
-            'displayValue' => $item->getDisplayValue(),
-            'value' => $item->getValue()
-          ];
-        }, $attribute->getItems()->toArray())
-      ];
-    }, $product->getAttributes()->toArray());
-
-    return [
-      'id' => $product->getId(),
-      'name' => $product->getName(),
-      'inStock' => $product->getInStock(),
-      'description' => $product->getDescription(),
-      'brand' => $product->getBrand(),
-      'gallery' => $gallery,
-      'category' =>  [
-        'id' => $product->getCategory()->getId(),
-        'name' => $product->getCategory()->getName()
-      ],
-      'prices' => $prices,
-      'attributes' => $attributes,
-    ];
-  }
-
-  /**
-   * @param CartItem[] $items array of products.
-   */
-  public function addToCart(array $items): bool
-  {
-    return $this->cartRepository->addToCart($items);
-  }
-
-  public function addProduct(array $data): Product
-  {
-    $product = new Product($data['name'], $data['price'], $data['description']);
-    return $this->productRepository->add($product);
-  }
+        return $this->productRepository->add($product);
+    }
 }

@@ -35,6 +35,10 @@ type TProps = {
   options: { [x: string]: string }
 }
 
+/**
+ * CartModalCard component displays a card with product details in the cart modal.
+ * It fetches product data using a GraphQL query and allows users to update the cart.
+ */
 function CartModalCard(props: TProps) {
   const cart = useCart()
   const getProductQueryResult = useQuery<TGetProductResult, TGetProductQuery>(
@@ -50,6 +54,9 @@ function CartModalCard(props: TProps) {
     setForm(props.options)
   }, [props.options])
 
+  /**
+   * Generates form settings for product attributes using the data from `getProductQueryResult`.
+   */
   const generateSettings = useMemo((): TFormSettings<{
     [x: string]: string
   }>[] => {
@@ -61,9 +68,9 @@ function CartModalCard(props: TProps) {
             type: o.type === 'swatch' ? 'color' : 'switch',
             label: o.name,
             readonly: true,
-            modal: true,
             values: o.items.map((i) => {
               return {
+                id: i.id,
                 key: i.value,
                 name: i.displayValue,
                 testId: `cart-item-attribute-${toKebabCase(o.name)}-${toKebabCase(o.name)}`,
@@ -86,8 +93,13 @@ function CartModalCard(props: TProps) {
           {getProductQueryResult.data?.product.name}
         </span>
         <div className="fs-6 fw-bold text-uppercase">
-          <span title={price?.currency.label}>{price?.currency.symbol}</span>
-          <span>{price?.amount}</span>
+          <span
+            title={price?.currency.label}
+            aria-label={`Currency: ${price?.currency.label}`}
+          >
+            {price?.currency.symbol}
+          </span>
+          <span aria-label={`Price: ${price?.amount}`}>{price?.amount}</span>
         </div>
         <Form
           updateForm={console.log}
@@ -108,10 +120,15 @@ function CartModalCard(props: TProps) {
             })
           }
           testId="cart-item-amount-increase"
+          aria-label="Increase quantity"
         >
           <i className="icon icon-plus p-1" />
         </Button>
-        <span className="fw-medium" data-testid="cart-item-amount">
+        <span
+          className="fw-medium"
+          data-testid="cart-item-amount"
+          aria-label={`Quantity: ${props.quantity}`}
+        >
           {props.quantity}
         </span>
         <Button
@@ -122,6 +139,7 @@ function CartModalCard(props: TProps) {
             cart.removeFromCart(props.id)
           }}
           testId="cart-item-amount-decrease"
+          aria-label="Decrease quantity"
         >
           <i className="icon icon-minus p-1" />
         </Button>
@@ -130,6 +148,7 @@ function CartModalCard(props: TProps) {
         <img
           width={121}
           src={getProductQueryResult.data?.product.gallery[0].imageUrl}
+          alt={getProductQueryResult.data?.product.name}
         />
       </div>
     </div>

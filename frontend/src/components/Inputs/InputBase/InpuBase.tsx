@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import React from 'react'
 
 import {
   TPropsWithStyle,
@@ -24,6 +25,9 @@ type TProps<T> = TPropsWithStyle &
     hideError?: boolean
   }
 
+/**
+ * A base component for input fields that provides common styling and context validation.
+ */
 function InputBase<T>(props: React.PropsWithChildren<TProps<T>>) {
   const context = useInputContext<string>()
 
@@ -44,6 +48,8 @@ function InputBase<T>(props: React.PropsWithChildren<TProps<T>>) {
       )}
       style={props.style}
       title={props.title}
+      aria-disabled={props.disabled}
+      aria-label={props.title}
     >
       {props.children}
     </div>

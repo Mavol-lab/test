@@ -15,15 +15,19 @@ const ADD_TO_CART = gql`
   }
 `
 
+/**
+ * CartModal component renders a modal window displaying the items in the user's cart.
+ * It allows users to view their cart items, see the total price, and place an order.
+ */
 function CartModal() {
   const cart = useCart()
 
   const [addToCart, { loading, error, data }] = useMutation(ADD_TO_CART)
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     const variables = cart.cart.map((c) => {
       const attributes = Object.entries(c.options).map((o) => {
-        return { name: o[0], value: o[1] }
+        return { id: o[0], value: o[1] }
       })
 
       return {
@@ -45,15 +49,20 @@ function CartModal() {
         'z-1 cart-modal position-absolute w-100 h-100 d-flex justify-content-end align-items-start',
         { visible: cart.isModalVisible },
       )}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cart-modal-title"
+      aria-describedby="cart-modal-description"
     >
-      {/** Creating 1 extra container so that the modal window matches the cart */}
       <div className="container-xxl d-flex justify-content-end">
         <div
           onClick={(e) => e.stopPropagation()}
           className="bg-white modal px-4 py-5 d-flex flex-column gap-5 position-sticky top-0 end-0"
         >
           <div>
-            <span className="fw-bold">My Bag, </span>
+            <span id="cart-modal-title" className="fw-bold">
+              My Bag,{' '}
+            </span>
             <span className="fw-medium" data-testid="cart-total">
               {`${cart.cart.length} ${cart.cart.length === 1 ? 'item' : 'items'}`}
             </span>
@@ -61,6 +70,7 @@ function CartModal() {
 
           {cart.itemCount() > 0 ? (
             <div
+              id="cart-modal-description"
               className="overflow-y-auto gap-5 d-flex flex-column"
               style={{ height: 300 }}
             >

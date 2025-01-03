@@ -7,7 +7,6 @@ import Button from '../../../components/Button/Button'
 import ButtonColor from '../../../components/Button/types/ButtonColor'
 import ButtonType from '../../../components/Button/types/ButtonType'
 import Form, { TFormSettings } from '../../../components/Form/Form'
-import Spinner from '../../../components/Spinner/Spinner'
 import Breakpoint from '../../../enums/Breakpoint'
 import useWindowSize from '../../../hooks/useWindowSize'
 import { toKebabCase } from '../../../utils/textFormat'
@@ -51,6 +50,11 @@ const GET_PRODUCT = gql`
   }
 `
 
+/**
+ * The `Product` component is responsible for displaying the details of a single product.
+ * It fetches product data using a GraphQL query, manages form state for product attributes,
+ * and allows users to add the product to their cart.
+ */
 export default function Product() {
   const [form, setForm] = useState<{ [x: string]: string }>({})
 
@@ -106,6 +110,7 @@ export default function Product() {
             values: o.items.map((i) => {
               return {
                 key: i.value,
+                id: i.id,
                 name: i.displayValue,
               }
             }),
@@ -127,13 +132,6 @@ export default function Product() {
       return
     }
 
-    // Throttling
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(null)
-      }, 1000)
-    })
-
     await cart.addToCart({
       productId: data?.product.id,
       options: form,
@@ -146,51 +144,168 @@ export default function Product() {
 
   if (loading) {
     return (
-      <div className="">
-        <Spinner className="primary m-auto" width={50} />
-      </div>
+      <>
+        <div className="d-flex row placeholder-glow" aria-live="polite">
+          <div
+            className="d-flex flex-column gap-2 col-1"
+            aria-label="Image placeholders"
+          >
+            <div
+              className="placeholder"
+              style={{ height: 80 }}
+              aria-hidden="true"
+            ></div>
+            <div
+              className="placeholder"
+              style={{ height: 80 }}
+              aria-hidden="true"
+            ></div>
+            <div
+              className="placeholder"
+              style={{ height: 80 }}
+              aria-hidden="true"
+            ></div>
+          </div>
+          <div
+            className="placeholder col-7"
+            style={{ height: 400 }}
+            aria-label="Main image placeholder"
+          ></div>
+          <div
+            className="col-4 d-flex flex-column"
+            aria-label="Product details placeholders"
+          >
+            <div className="placeholder col-4 fs-0" aria-hidden="true"></div>
+            <div
+              className="placeholder col-3 fs-3 mt-7"
+              aria-hidden="true"
+            ></div>
+            <span className="mt-2">
+              ${' '}
+              <div className="placeholder col-3 fs-4" aria-hidden="true"></div>
+            </span>
+            <div
+              className="placeholder col-9 fs-0 mt-5 bg-primary"
+              aria-hidden="true"
+            ></div>
+            <div
+              className="placeholder col-5 fs-1 mt-3"
+              aria-hidden="true"
+            ></div>
+            <div
+              className="d-flex flex-wrap gap-1 mt-3"
+              aria-label="Attribute placeholders"
+            >
+              <div
+                className="placeholder col-2 fs-4 mt-1"
+                aria-hidden="true"
+              ></div>
+              <div
+                className="placeholder col-3 fs-4 mt-1"
+                aria-hidden="true"
+              ></div>
+              <div
+                className="placeholder col-2 fs-4 mt-1"
+                aria-hidden="true"
+              ></div>
+              <div
+                className="placeholder col-1 fs-4 mt-1"
+                aria-hidden="true"
+              ></div>
+              <div
+                className="placeholder col-4 fs-4 mt-1"
+                aria-hidden="true"
+              ></div>
+              <div
+                className="placeholder col-3 fs-4 mt-1"
+                aria-hidden="true"
+              ></div>
+              <div
+                className="placeholder col-6 fs-4 mt-1"
+                aria-hidden="true"
+              ></div>
+              <div
+                className="placeholder col-4 fs-4 mt-1"
+                aria-hidden="true"
+              ></div>
+              <div
+                className="placeholder col-3 fs-4 mt-1"
+                aria-hidden="true"
+              ></div>
+              <div
+                className="placeholder col-3 fs-4 mt-1"
+                aria-hidden="true"
+              ></div>
+              <div
+                className="placeholder col-3 fs-4 mt-1"
+                aria-hidden="true"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </>
     )
   }
 
   return (
-    <div className="d-flex flex-column align-items-lg-start flex-lg-row gap-7 flex-grow-1">
-      {data && (
-        <ProductCarousel src={data.product.gallery.map((g) => g.imageUrl)} />
-      )}
-
+    <>
       <div
-        className="d-flex flex-column gap-5 pe-lg-7"
-        style={{ maxWidth: reachBreakpoint(Breakpoint.LG) ? 300 : '100%' }}
+        className="d-flex flex-column align-items-lg-start flex-lg-row gap-7 flex-grow-1"
+        aria-live="polite"
       >
-        <h2>{data?.product.name}</h2>
-        {form && data?.product.inStock && (
-          <Form updateForm={setForm} form={form} settings={generateSettings} />
+        {data && (
+          <ProductCarousel
+            src={data.product.gallery.map((g) => g.imageUrl)}
+            aria-label="Product images carousel"
+          />
         )}
-        <div>
-          <div className="fs-6 fw-bold text-uppercase">Price:</div>
-          <div className="fs-5 fw-bold text-uppercase">
-            <span title={price?.currency.label}>{price?.currency.symbol}</span>
-            <span>{price?.amount.toFixed(2)}</span>
-          </div>
-        </div>
-        <Button
-          className="p-3 w-100"
-          color={ButtonColor.Primary}
-          type={ButtonType.Solid}
-          isDisabled={!data?.product.inStock || !formIsValid}
-          onClick={addToCart}
-          testId="add-to-cart"
+
+        <div
+          className="d-flex flex-column gap-5 pe-lg-7"
+          style={{ maxWidth: reachBreakpoint(Breakpoint.LG) ? 300 : '100%' }}
+          aria-labelledby="product-name"
         >
-          <span className="text-uppercase">
-            {data?.product.inStock ? 'Add to cart' : 'Out of stock'}
-          </span>
-        </Button>
-        <div>
-          <div data-testid="product-description">
-            {parse(data?.product.description ?? '')}
+          <h2 id="product-name">{data?.product.name}</h2>
+          {form && data?.product.inStock && (
+            <Form
+              updateForm={setForm}
+              form={form}
+              settings={generateSettings}
+              aria-label="Product attributes form"
+            />
+          )}
+          <div>
+            <div className="fs-6 fw-bold text-uppercase">Price:</div>
+            <div className="fs-5 fw-bold text-uppercase">
+              <span title={price?.currency.label}>
+                {price?.currency.symbol}
+              </span>
+              <span>{price?.amount.toFixed(2)}</span>
+            </div>
+          </div>
+          <Button
+            className="p-3 w-100"
+            color={ButtonColor.Primary}
+            type={ButtonType.Solid}
+            isDisabled={!data?.product.inStock || !formIsValid}
+            onClick={addToCart}
+            testId="add-to-cart"
+            aria-label="Add to cart button"
+          >
+            <span className="text-uppercase">
+              {data?.product.inStock ? 'Add to cart' : 'Out of stock'}
+            </span>
+          </Button>
+          <div>
+            <div
+              data-testid="product-description"
+              aria-label="Product description"
+            >
+              {parse(data?.product.description ?? '')}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }

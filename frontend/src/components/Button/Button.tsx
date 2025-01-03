@@ -31,7 +31,7 @@ type TProps = PropsWithChildren & {
   /**
    * Function to call when button is clicked.
    */
-  onClick?: () => Promise<void> | void
+  onClick?: (e: React.MouseEvent) => Promise<void> | void
 
   /**
    * The variable is added for testing purposes.
@@ -40,13 +40,26 @@ type TProps = PropsWithChildren & {
   testId?: string
 }
 
+/**
+ * Button component that renders a button element with loading state and custom styles.
+ */
 function Button(props: TProps) {
   const [isLoading, setIsLoading] = useState(false)
 
-  const onClick = async () => {
+  /**
+   * Handles the button click event.
+   * If the button is not disabled and an onClick handler is provided via props,
+   * it sets the loading state to true, awaits the execution of the onClick handler,
+   * and then sets the loading state back to false.
+   *
+   * @async
+   * @function
+   * @returns {Promise<void>} A promise that resolves when the onClick handler completes.
+   */
+  const onClick = async (e: React.MouseEvent): Promise<void> => {
     if (props.onClick && !props.isDisabled) {
       setIsLoading(true)
-      await props.onClick()
+      await props.onClick(e)
       setIsLoading(false)
     }
   }
@@ -63,6 +76,8 @@ function Button(props: TProps) {
       ])}
       onClick={onClick}
       data-testid={props.testId}
+      aria-disabled={props.isDisabled || isLoading}
+      aria-busy={isLoading}
     >
       {props.children}
       <Spinner className={classNames({ 'd-none': !isLoading })} />
