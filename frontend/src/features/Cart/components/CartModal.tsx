@@ -50,6 +50,7 @@ function CartModal() {
         { visible: cart.isModalVisible },
       )}
       role="dialog"
+      data-testid="cart-overlay"
       aria-modal="true"
       aria-labelledby="cart-modal-title"
       aria-describedby="cart-modal-description"

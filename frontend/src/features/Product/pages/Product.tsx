@@ -293,9 +293,7 @@ export default function Product() {
             testId="add-to-cart"
             aria-label="Add to cart button"
           >
-            <span className="text-uppercase">
-              {data?.product.inStock ? 'Add to cart' : 'Out of stock'}
-            </span>
+            {data?.product.inStock ? 'ADD TO CART' : 'OUT OF STOCK'}
           </Button>
           <div>
             <div
