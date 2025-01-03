@@ -49,6 +49,8 @@ function Card(props: TProps) {
     props.onButtonClick()
   }
 
+  console.log(toKebabCase(props.name), props.name)
+
   return (
     <div
       className="p-0 p-md-3"
