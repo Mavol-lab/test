@@ -10,6 +10,7 @@ import {
   GET_PRODUCT_CATEGORIES,
   TGetProductCategoriesResult,
 } from '../features/Product/graphql/GetProductCategoriesQuery'
+import IProductCategory from '../features/Product/models/IProductCategory'
 import { useNavigationContext } from '../providers/NavigationProvider'
 
 /**
@@ -30,7 +31,7 @@ export default function MainLayout() {
     if (
       categories &&
       !getProductCategoriesState.loading &&
-      !categories.some((c) => c.name === category)
+      !categories.some((c: IProductCategory) => c.name === category)
     ) {
       navigate(`/${categories[0].name}`)
     }

@@ -1,0 +1,25 @@
+.catalog-card {
+  transition: 0.2s;
+
+  .btn {
+    visibility: hidden;
+    opacity: 0 !important;
+    transform: translate(-30%, 0px);
+    transition: 0.2s !important;
+  }
+
+  &:hover {
+    box-shadow: var(--bs-box-shadow-lg);
+    transition: 0.2s;
+
+    .btn {
+      visibility: visible;
+      opacity: 1 !important;
+      transform: translate(-30%, -50%);
+    }
+  }
+
+  img {
+    object-fit: contain;
+  }
+}
