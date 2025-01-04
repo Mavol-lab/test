@@ -38,6 +38,11 @@ type TProps = PropsWithChildren & {
    * Required for test data attribute.
    */
   testId?: string
+
+  /**
+   * The button aria label.
+   */
+  ariaLabel?: string
 }
 
 /**
@@ -78,6 +83,7 @@ function Button(props: TProps) {
       data-testid={props.testId}
       aria-disabled={props.isDisabled || isLoading}
       aria-busy={isLoading}
+      aria-label={props.ariaLabel}
       disabled={props.isDisabled}
     >
       {props.children}

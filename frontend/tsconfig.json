@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "types": [
+      "vitest",
       "node"
     ],
     "target": "ESNext",

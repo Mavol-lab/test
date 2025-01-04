@@ -1,3 +1,9 @@
+/**
+ * Compares two objects for deep equality.
+ *
+ * This function checks if two objects are deeply equal by comparing their properties and values recursively.
+ * It handles nested objects and arrays, and returns `true` if the objects are deeply equal, and `false` otherwise.
+ */
 export function deepEqual<T>(obj1: T, obj2: T) {
   if (obj1 === obj2) {
     return true // Checking for link identity.
@@ -37,13 +43,14 @@ export function deepEqual<T>(obj1: T, obj2: T) {
   return true
 }
 
+/**
+ * Creates a deep clone of the given object or array.
+ */
 export function deepClone<T>(obj: T): T {
-  // Проверка на null и тип объекта
   if (obj === null || typeof obj !== 'object') {
     return obj
   }
 
-  // Обработка массива
   if (Array.isArray(obj)) {
     const arrClone = [] as unknown as any[]
 
@@ -53,7 +60,6 @@ export function deepClone<T>(obj: T): T {
     return arrClone as T
   }
 
-  // Обработка объекта
   const objClone = {} as T
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {

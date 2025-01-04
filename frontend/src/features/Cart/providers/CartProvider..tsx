@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 import { deepClone, deepEqual } from '../../../utils/deepObjectEqual'
 import IndexedDBService from '../../../utils/indexedDBService'
@@ -108,7 +108,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const [cart, setCart] = useState<TCartItem[]>([])
   const [isModalVisible, setIsModalVisible] = useState(false)
 
-  const cartDB = new IndexedDBService<TCartItem>('ShoppingCartDB', 'cart')
+  const cartDB = useMemo(
+    () => new IndexedDBService<TCartItem>('ShoppingCartDB', 'cart'),
+    [],
+  )
 
   useEffect(() => {
     const loadCart = async () => {
@@ -118,7 +121,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     loadCart()
-  }, [])
+  }, [cartDB])
 
   /**
    * Function to add an item to the cart.
@@ -154,10 +157,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const newItem: TCartItem = {
-      id: cart.length, // Сгенерировать ID, если его нет
+      id: cart.length,
       productId: item.productId,
       quantity: item.quantity,
-      options: item.options || {}, // Установить пустой объект, если нет options
+      options: item.options || {},
       price: item.price,
     }
 

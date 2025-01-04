@@ -7,7 +7,7 @@ import {
 } from '../../../types/TPropsWith'
 import { useInputContext } from './InputProvider'
 
-type TProps<T> = TPropsWithStyle &
+type TProps = TPropsWithStyle &
   TPropsWithVisibility & {
     /**
      * The input title.
@@ -28,7 +28,7 @@ type TProps<T> = TPropsWithStyle &
 /**
  * A base component for input fields that provides common styling and context validation.
  */
-function InputBase<T>(props: React.PropsWithChildren<TProps<T>>) {
+function InputBase(props: React.PropsWithChildren<TProps>) {
   const context = useInputContext<string>()
 
   if (props.isVisible === false) {

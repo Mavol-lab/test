@@ -11,7 +11,7 @@ export default function Redirect() {
 
   useEffect(() => {
     navigate('/all')
-  }, [])
+  }, [navigate])
 
   return <></>
 }

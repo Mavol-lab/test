@@ -1,21 +1,16 @@
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { Suspense, useEffect } from 'react'
 import { Outlet, useParams } from 'react-router'
 
 import Header from '../components/Header/Header'
 import Page from '../components/Page/Page'
-import CartModal from '../features/Cart/components/CartModal'
+import Cart from '../features/Cart/components/Cart'
 import { useCart } from '../features/Cart/providers/CartProvider.'
-import IProductCategory from '../features/Product/models/IProductCategory'
+import {
+  GET_PRODUCT_CATEGORIES,
+  TGetProductCategoriesResult,
+} from '../features/Product/graphql/GetProductCategoriesQuery'
 import { useNavigationContext } from '../providers/NavigationProvider'
-
-const GET_CATEGORIES = gql`
-  query {
-    categories {
-      name
-    }
-  }
-`
 
 /**
  * MainLayout component that serves as the main layout for the application.
@@ -23,17 +18,23 @@ const GET_CATEGORIES = gql`
  */
 export default function MainLayout() {
   const { category } = useParams()
-  const { data, loading } = useQuery<{ categories: IProductCategory[] }>(
-    GET_CATEGORIES,
-  )
   const { navigate } = useNavigationContext()
   const cart = useCart()
+  const getProductCategoriesState = useQuery<TGetProductCategoriesResult>(
+    GET_PRODUCT_CATEGORIES,
+  )
+
+  const categories = getProductCategoriesState.data?.categories
 
   useEffect(() => {
-    if (!loading && !data?.categories.some((c) => c.name === category)) {
-      navigate(`/${data?.categories[0].name}`)
+    if (
+      categories &&
+      !getProductCategoriesState.loading &&
+      !categories.some((c) => c.name === category)
+    ) {
+      navigate(`/${categories[0].name}`)
     }
-  }, [loading, category, data?.categories, navigate])
+  }, [getProductCategoriesState.loading, category, categories, navigate])
 
   /**
    * Handles the selection of an item and navigates to the corresponding category page.
@@ -52,22 +53,27 @@ export default function MainLayout() {
     <div style={{ height: '100vh' }} className="d-flex flex-column ">
       <div className="container-xxl d-flex flex-column px-0">
         {/** Page header */}
-        {!loading && data && (
-          <Header>
-            <Header.Nav
-              onSelect={onSelect}
-              selected={category ?? data.categories[0].name}
-              items={data.categories.map((c: any) => c.name)}
-              aria-label="Category Navigation"
-            />
-            <Header.Logo />
-            <Header.CartButton onClick={toggleModel} aria-label="Open Cart" />
-          </Header>
-        )}
+        {!getProductCategoriesState.loading &&
+          getProductCategoriesState.data && (
+            <Header>
+              <Header.Nav
+                onSelect={onSelect}
+                selected={
+                  category ?? getProductCategoriesState.data.categories[0].name
+                }
+                items={getProductCategoriesState.data.categories.map(
+                  (c: any) => c.name,
+                )}
+                aria-label="Category Navigation"
+              />
+              <Header.Logo />
+              <Header.CartButton onClick={toggleModel} aria-label="Open Cart" />
+            </Header>
+          )}
       </div>
 
       <div className=" overflow-y-auto pb-5">
-        <CartModal aria-label="Cart Modal" />
+        <Cart aria-label="Cart Modal" />
         <div className="container-xxl d-flex flex-column px-0">
           {/** Page body */}
           <div className="flex-grow-1">

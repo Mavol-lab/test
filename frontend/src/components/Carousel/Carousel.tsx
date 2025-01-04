@@ -21,6 +21,9 @@ type TProps = {
   onPrevious: () => void
 }
 
+/**
+ * Carousel component that displays an image with navigation controls.
+ */
 function Carousel(props: TProps) {
   return (
     <div
@@ -35,7 +38,7 @@ function Carousel(props: TProps) {
           type={ButtonType.Solid}
           className="left p-0 d-flex align-items-center"
           onClick={props.onPrevious}
-          aria-label="Previous Slide"
+          ariaLabel="Previous Slide"
         >
           <i className="icon icon-left bg-white p-4" />
         </Button>
@@ -44,7 +47,7 @@ function Carousel(props: TProps) {
           type={ButtonType.Solid}
           className="right p-0 d-flex align-items-center"
           onClick={props.onNext}
-          aria-label="Next Slide"
+          ariaLabel="Next Slide"
         >
           <i className="icon icon-right bg-white p-4" />
         </Button>
