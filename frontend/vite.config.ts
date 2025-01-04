@@ -1,9 +1,8 @@
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
-import eslint from 'vite-plugin-eslint'
+/// <reference types="vitest/config" />
+
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  plugins: [react(), eslint()],
   test: {
     globals: true,
     environment: 'jsdom',
